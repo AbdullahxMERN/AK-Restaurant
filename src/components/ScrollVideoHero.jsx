@@ -40,10 +40,15 @@ const FOOD_ICONS = [
 export default function ScrollVideoHero() {
   const containerRef = useRef(null);
   const videoRef = useRef(null);
-  const [loading, setLoading] = useState(true);
-  const [scrollProgress, setScrollProgress] = useState(0);
-  const [heroMounted, setHeroMounted] = useState(false);
 
+  // Refs for UI elements to bypass React rendering during scroll
+  const uiContainerRef = useRef(null);
+  const vignetteRef = useRef(null);
+  const badgeLeftRef = useRef(null);
+  const badgeRightRef = useRef(null);
+  const foodIconsRef = useRef([]);
+
+  const [loading, setLoading] = useState(true);
   const START_TIME = 0.33;
 
   useEffect(() => {
@@ -57,8 +62,12 @@ export default function ScrollVideoHero() {
 
     let blobUrl = null;
     let duration = 5.04;
-    let targetTime = START_TIME;
+
+    // Physics & Time Variables (Kept entirely out of React state)
+    let targetProgress = 0;
+    let currentProgress = 0;
     let currentTime = START_TIME;
+    let lastSetTime = -1;
     let rafId = null;
 
     fetch("/videos/hero.mp4")
@@ -79,13 +88,14 @@ export default function ScrollVideoHero() {
             video.currentTime = START_TIME;
           }
           setLoading(false);
-          setHeroMounted(true);
+          // Initial UI Update
+          updateUI(0);
         };
       })
       .catch(() => {
         video.src = "/videos/hero.mp4";
         setLoading(false);
-        setHeroMounted(true);
+        updateUI(0);
       });
 
     const handleScroll = () => {
@@ -93,22 +103,69 @@ export default function ScrollVideoHero() {
       const totalScroll = container.offsetHeight - window.innerHeight;
       if (totalScroll <= 0) return;
 
-      const progress = Math.max(0, Math.min(1, scrollY / totalScroll));
-      setScrollProgress(progress);
-      targetTime = START_TIME + progress * (duration - START_TIME);
+      // Update target progress instantly on scroll
+      targetProgress = Math.max(0, Math.min(1, scrollY / totalScroll));
+    };
+
+    // Fast, React-free UI update function
+    const updateUI = (progress) => {
+      const fadeProgress = Math.min(1, progress / 0.18);
+      const opacity = Math.max(0, 1 - fadeProgress);
+      const translateY = -fadeProgress * 40;
+      const scale = 1 - fadeProgress * 0.05;
+      const blur = fadeProgress * 6;
+      const isHidden = opacity <= 0.01;
+
+      if (uiContainerRef.current) {
+        uiContainerRef.current.style.opacity = opacity;
+        uiContainerRef.current.style.transform = `translateY(${translateY}px) scale(${scale})`;
+        uiContainerRef.current.style.filter = `blur(${blur}px)`;
+        uiContainerRef.current.style.display = isHidden ? "none" : "flex";
+      }
+
+      if (vignetteRef.current) {
+        vignetteRef.current.style.opacity = opacity > 0 ? 0.9 : 0.45;
+      }
+
+      if (badgeLeftRef.current && badgeRightRef.current) {
+        badgeLeftRef.current.style.opacity = opacity;
+        badgeLeftRef.current.style.display = isHidden ? "none" : "block";
+        badgeRightRef.current.style.opacity = opacity;
+        badgeRightRef.current.style.display = isHidden ? "none" : "block";
+      }
+
+      foodIconsRef.current.forEach((icon) => {
+        if (icon) {
+          icon.style.opacity = opacity * 0.85;
+          icon.style.display = isHidden ? "none" : "block";
+        }
+      });
     };
 
     const loop = () => {
       if (!loading && duration > 0) {
-        const diff = targetTime - currentTime;
+        // 1. Smoothly interpolate the progress (The "Glide" effect)
+        currentProgress += (targetProgress - currentProgress) * 0.08;
 
-        if (Math.abs(diff) > 0.01) {
-          currentTime += diff * 0.15;
-          currentTime = Math.max(START_TIME, Math.min(duration, currentTime));
+        // 2. Update UI outside of React for maximum frame rate
+        if (Math.abs(targetProgress - currentProgress) > 0.001) {
+          updateUI(currentProgress);
+        }
 
+        // 3. Calculate target video time
+        const targetTime =
+          START_TIME + currentProgress * (duration - START_TIME);
+
+        // 4. Smoothly interpolate video time
+        currentTime += (targetTime - currentTime) * 0.12;
+        currentTime = Math.max(START_TIME, Math.min(duration, currentTime));
+
+        // 5. Throttled Video Update (Only talk to video API if time changed by ~30fps equivalent)
+        if (Math.abs(currentTime - lastSetTime) >= 0.033) {
           if (video.readyState >= 2) {
             try {
               video.currentTime = currentTime;
+              lastSetTime = currentTime;
             } catch (e) {
               // fail silently if video is busy
             }
@@ -129,16 +186,6 @@ export default function ScrollVideoHero() {
     };
   }, [loading]);
 
-  // Smooth fade out as user scrolls
-  const fadeProgress = Math.min(1, scrollProgress / 0.18);
-  const textOpacity = heroMounted ? Math.max(0, 1 - fadeProgress) : 0;
-  const textTranslateY = -fadeProgress * 40;
-  const textScale = 1 - fadeProgress * 0.05;
-  const textBlur = fadeProgress * 6;
-  const isTextHidden = textOpacity <= 0.01;
-
-  const scrollPercentDisplay = Math.round(scrollProgress * 100);
-
   return (
     <section
       ref={containerRef}
@@ -146,7 +193,6 @@ export default function ScrollVideoHero() {
       className="relative w-full select-none"
       style={{ height: "300vh", background: "var(--color-dark)" }}
     >
-      {/* Sticky Fullscreen Video Window */}
       <div
         className="sticky top-0 left-0 w-full h-screen overflow-hidden flex items-center justify-center z-10"
         style={{ background: "var(--color-dark)" }}
@@ -168,9 +214,10 @@ export default function ScrollVideoHero() {
 
         {/* Cinematic Vignette */}
         <div
+          ref={vignetteRef}
           className="absolute inset-0 pointer-events-none transition-opacity duration-700"
           style={{
-            opacity: textOpacity > 0 ? 0.9 : 0.45,
+            opacity: 0, // Handled by JS
             background: `
               linear-gradient(to bottom, rgba(12,9,6,0.8) 0%, rgba(12,9,6,0.2) 35%, rgba(12,9,6,0.2) 60%, rgba(12,9,6,0.92) 100%),
               radial-gradient(ellipse at center, transparent 30%, rgba(12,9,6,0.7) 100%)
@@ -178,13 +225,10 @@ export default function ScrollVideoHero() {
           }}
         />
 
-        {/* ─── Top Corner Badges ("NEW" / "FLAVOR") ─── */}
+        {/* Top Corner Badges */}
         <div
-          className="absolute top-20 sm:top-24 left-5 sm:left-12 z-20 pointer-events-none transition-all duration-300"
-          style={{
-            opacity: textOpacity,
-            display: isTextHidden ? "none" : "block",
-          }}
+          ref={badgeLeftRef}
+          className="absolute top-20 sm:top-24 left-5 sm:left-12 z-20 pointer-events-none opacity-0"
         >
           <span
             className="corner-tag text-[0.65rem] sm:text-xs"
@@ -194,11 +238,8 @@ export default function ScrollVideoHero() {
           </span>
         </div>
         <div
-          className="absolute top-20 sm:top-24 right-5 sm:right-12 z-20 pointer-events-none transition-all duration-300"
-          style={{
-            opacity: textOpacity,
-            display: isTextHidden ? "none" : "block",
-          }}
+          ref={badgeRightRef}
+          className="absolute top-20 sm:top-24 right-5 sm:right-12 z-20 pointer-events-none opacity-0"
         >
           <span
             className="corner-tag text-[0.65rem] sm:text-xs"
@@ -208,17 +249,11 @@ export default function ScrollVideoHero() {
           </span>
         </div>
 
-        {/* ─── Center Hero Content (With generous vertical breathing room) ─── */}
+        {/* Center Hero Content */}
         <div
-          className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none z-10 px-4 sm:px-6 transition-all duration-150"
-          style={{
-            opacity: textOpacity,
-            transform: `translateY(${textTranslateY}px) scale(${textScale})`,
-            filter: `blur(${textBlur}px)`,
-            display: isTextHidden ? "none" : "flex",
-          }}
+          ref={uiContainerRef}
+          className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none z-10 px-4 sm:px-6 opacity-0"
         >
-          {/* Badge: "Proudly Present" */}
           <div
             className="badge-present mb-2 sm:mb-3 text-center"
             style={{
@@ -231,7 +266,6 @@ export default function ScrollVideoHero() {
             <span style={{ color: "var(--color-orange-bright)" }}>Present</span>
           </div>
 
-          {/* Clean Title: "AK RESTAURANT" — scaled so 'RESTAURANT' never clips on mobile */}
           <div className="relative text-center my-2 sm:my-3 max-w-full px-2">
             <h1
               className="font-display font-black text-center whitespace-nowrap"
@@ -246,8 +280,6 @@ export default function ScrollVideoHero() {
             >
               AK RESTAURANT
             </h1>
-
-            {/* Sub-label with proper margin */}
             <div className="mt-2.5 sm:mt-3 text-center">
               <span
                 className="font-display font-extrabold"
@@ -264,7 +296,6 @@ export default function ScrollVideoHero() {
             </div>
           </div>
 
-          {/* ─── Retro Editorial Manifesto Box — cleanly padded, no text cramming ─── */}
           <div className="w-full max-w-xl px-2 sm:px-4 my-4 sm:my-6">
             <div
               className="retro-manifesto"
@@ -296,19 +327,17 @@ export default function ScrollVideoHero() {
             </div>
           </div>
 
-          {/* Floating Food Emojis — Hidden on small mobile screens to prevent clutter! */}
           {FOOD_ICONS.map((icon, i) => (
             <div
               key={i}
+              ref={(el) => (foodIconsRef.current[i] = el)}
               className="absolute pointer-events-none hidden sm:block"
               style={{
                 left: icon.x,
                 top: icon.y,
                 fontSize: icon.size,
-                opacity: textOpacity * 0.85,
                 animation: `float ${3.2 + i * 0.5}s ease-in-out ${icon.delay}s infinite`,
                 filter: "drop-shadow(0 12px 30px rgba(0,0,0,0.8))",
-                display: isTextHidden ? "none" : "block",
               }}
               aria-label={icon.label}
             >
@@ -316,7 +345,6 @@ export default function ScrollVideoHero() {
             </div>
           ))}
 
-          {/* Scroll Down Prompt with clean margin */}
           <div className="mt-4 sm:mt-6 flex flex-col items-center gap-2">
             <span className="font-display font-bold text-[0.6rem] sm:text-xs tracking-[0.25em] uppercase text-white/90">
               Scroll to explore
