@@ -3,10 +3,38 @@
 import { useEffect, useRef, useState } from "react";
 
 const FOOD_ICONS = [
-  { emoji: "🍕", label: "Pizza", x: "6%", y: "22%", delay: 0, size: "clamp(34px, 3.5vw, 56px)" },
-  { emoji: "🍔", label: "Burger", x: "88%", y: "18%", delay: 0.3, size: "clamp(34px, 3.5vw, 56px)" },
-  { emoji: "🍟", label: "Fries", x: "8%", y: "72%", delay: 0.6, size: "clamp(30px, 3vw, 48px)" },
-  { emoji: "🌯", label: "Shawarma", x: "86%", y: "70%", delay: 0.9, size: "clamp(30px, 3vw, 50px)" },
+  {
+    emoji: "🍕",
+    label: "Pizza",
+    x: "6%",
+    y: "22%",
+    delay: 0,
+    size: "clamp(34px, 3.5vw, 56px)",
+  },
+  {
+    emoji: "🍔",
+    label: "Burger",
+    x: "88%",
+    y: "18%",
+    delay: 0.3,
+    size: "clamp(34px, 3.5vw, 56px)",
+  },
+  {
+    emoji: "🍟",
+    label: "Fries",
+    x: "8%",
+    y: "72%",
+    delay: 0.6,
+    size: "clamp(30px, 3vw, 48px)",
+  },
+  {
+    emoji: "🌯",
+    label: "Shawarma",
+    x: "86%",
+    y: "70%",
+    delay: 0.9,
+    size: "clamp(30px, 3vw, 50px)",
+  },
 ];
 
 export default function ScrollVideoHero() {
@@ -31,7 +59,6 @@ export default function ScrollVideoHero() {
     let duration = 5.04;
     let targetTime = START_TIME;
     let currentTime = START_TIME;
-    let isSeeking = false;
     let rafId = null;
 
     fetch("/videos/hero.mp4")
@@ -61,10 +88,6 @@ export default function ScrollVideoHero() {
         setHeroMounted(true);
       });
 
-    video.addEventListener("seeked", () => {
-      isSeeking = false;
-    });
-
     const handleScroll = () => {
       const scrollY = window.pageYOffset || document.documentElement.scrollTop;
       const totalScroll = container.offsetHeight - window.innerHeight;
@@ -78,19 +101,16 @@ export default function ScrollVideoHero() {
     const loop = () => {
       if (!loading && duration > 0) {
         const diff = targetTime - currentTime;
-        if (Math.abs(diff) > 0.005) {
-          currentTime += diff * 0.35;
+
+        if (Math.abs(diff) > 0.01) {
+          currentTime += diff * 0.15;
           currentTime = Math.max(START_TIME, Math.min(duration, currentTime));
-          if (!isSeeking) {
-            isSeeking = true;
+
+          if (video.readyState >= 2) {
             try {
-              if (typeof video.fastSeek === "function") {
-                video.fastSeek(currentTime);
-              } else {
-                video.currentTime = currentTime;
-              }
+              video.currentTime = currentTime;
             } catch (e) {
-              isSeeking = false;
+              // fail silently if video is busy
             }
           }
         }
@@ -203,10 +223,12 @@ export default function ScrollVideoHero() {
             className="badge-present mb-2 sm:mb-3 text-center"
             style={{
               color: "#ffffff",
-              textShadow: "0 4px 25px rgba(0,0,0,0.9), 0 0 30px rgba(255,107,0,0.4)",
+              textShadow:
+                "0 4px 25px rgba(0,0,0,0.9), 0 0 30px rgba(255,107,0,0.4)",
             }}
           >
-            Proudly <span style={{ color: "var(--color-orange-bright)" }}>Present</span>
+            <span>Proudly </span>
+            <span style={{ color: "var(--color-orange-bright)" }}>Present</span>
           </div>
 
           {/* Clean Title: "AK RESTAURANT" — scaled so 'RESTAURANT' never clips on mobile */}
@@ -260,7 +282,10 @@ export default function ScrollVideoHero() {
               </span>
               <span> KITCHEN WITH STRONG CHARACTER</span>
               <span className="rule-bar-orange" />
-              <span>AND FRESH RECIPES. MODERN TASTE WITH A CLEAR AND BOLD LOOK. IT&apos;S A VERY </span>
+              <span>
+                AND FRESH RECIPES. MODERN TASTE WITH A CLEAR AND BOLD LOOK.
+                IT&apos;S A VERY{" "}
+              </span>
               <span className="rule-bar" />
               <span style={{ color: "var(--color-orange-bright)" }}>
                 VERSATILE JOURNEY
@@ -299,12 +324,12 @@ export default function ScrollVideoHero() {
             <div
               className="w-[1.5px] h-6"
               style={{
-                background: "linear-gradient(to bottom, var(--color-orange), transparent)",
+                background:
+                  "linear-gradient(to bottom, var(--color-orange), transparent)",
               }}
             />
           </div>
         </div>
-
       </div>
     </section>
   );
