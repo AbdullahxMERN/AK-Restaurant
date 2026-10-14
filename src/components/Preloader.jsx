@@ -133,7 +133,7 @@ export default function Preloader({ onComplete }) {
           <span className="h-px w-8 bg-[#ff6b00]/70 sm:w-14" />
         </div>
 
-        <h1 className="font-display !text-[clamp(2.5rem,9vw,6.5rem)] !leading-[0.9] tracking-[-0.05em] text-white">
+        <h1 className="font-display px-14 !text-[clamp(2.5rem,9vw,6.5rem)] !leading-[0.9] tracking-[-0.05em] text-white">
           AK
           <span className="ml-3 text-[#ff6b00] sm:ml-5">RESTAURANT</span>
         </h1>
