@@ -1,0 +1,301 @@
+@import "tailwindcss";
+
+/* ═══════════════════════════════════════════════════════
+   AK RESTAURANT — Design System
+   Chunky Retro Display · Vibrant Tangerine & Lily Orange · Moody Dark
+   ═══════════════════════════════════════════════════════ */
+
+@theme {
+  --font-display: var(--font-display), "Syne", sans-serif;
+  --font-retro: var(--font-retro), "Shrikhand", cursive;
+  --font-serif: var(--font-serif), "Fraunces", Georgia, serif;
+  --font-sans: var(--font-sans), "Plus Jakarta Sans", system-ui, sans-serif;
+}
+
+:root {
+  /* ─── High-Contrast Palette ─── */
+  --color-dark: #0c0906;
+  --color-darker: #060403;
+  --color-dark-card: #130e09;
+  --color-dark-hover: #1c150e;
+  
+  /* ─── Vibrant Lily Tangerine Orange Accent ─── */
+  --color-orange: #ff6b00;
+  --color-orange-bright: #ff851b;
+  --color-orange-light: #ffa347;
+  --color-orange-dim: rgba(255, 107, 0, 0.35);
+  --color-orange-soft: rgba(255, 107, 0, 0.12);
+  --color-orange-glow: rgba(255, 107, 0, 0.45);
+  
+  /* ─── Crisp Whites & Creams ─── */
+  --color-white: #ffffff;
+  --color-cream: #fbf7ee;
+  --color-text-muted: #b8aa98;
+  --color-text-soft: #d6ccbe;
+  
+  /* ─── Borders & Lines ─── */
+  --color-border: rgba(255, 255, 255, 0.1);
+  --color-border-orange: rgba(255, 107, 0, 0.28);
+  --color-rule: rgba(255, 255, 255, 0.55);
+
+  /* ─── Transitions ─── */
+  --ease-smooth: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-out: cubic-bezier(0.165, 0.84, 0.44, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+/* ─── Base Reset ─── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  height: 100%;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  overflow-x: clip;
+}
+
+body {
+  background-color: var(--color-dark);
+  color: var(--color-white);
+  min-height: 100%;
+  margin: 0;
+  font-family: var(--font-sans), "Plus Jakarta Sans", system-ui, sans-serif;
+  font-size: clamp(14px, 1vw, 18px);
+  font-weight: 500;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: clip;
+}
+
+/* ─── Typography Classes ─── */
+.font-display {
+  font-family: var(--font-display), "Syne", sans-serif;
+  font-weight: 800;
+}
+
+.font-retro {
+  font-family: var(--font-retro), "Shrikhand", cursive;
+}
+
+.font-serif-hero {
+  font-family: var(--font-serif), "Fraunces", Georgia, serif;
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display), "Syne", sans-serif;
+  font-weight: 800;
+  margin: 0;
+  color: var(--color-white);
+  letter-spacing: -0.02em;
+}
+
+h1 {
+  font-size: clamp(3.5rem, 9.5vw, 11rem);
+  line-height: 0.88;
+  letter-spacing: -0.035em;
+}
+
+h2 {
+  font-size: clamp(2.5rem, 6vw, 6.5rem);
+  line-height: 0.92;
+  letter-spacing: -0.03em;
+}
+
+h3 {
+  font-size: clamp(1.6rem, 3.5vw, 3.8rem);
+  line-height: 1.05;
+}
+
+h4 {
+  font-size: clamp(1.2rem, 2.2vw, 2.4rem);
+  line-height: 1.15;
+}
+
+p {
+  font-family: var(--font-sans), "Plus Jakarta Sans", system-ui, sans-serif;
+  font-size: clamp(0.85rem, 0.95vw, 1.05rem);
+  line-height: 1.65;
+  font-weight: 500;
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  max-width: 100%;
+  vertical-align: middle;
+  display: block;
+}
+
+/* ─── Scrollbar ─── */
+::-webkit-scrollbar {
+  width: 5px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-darker);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-orange);
+  border-radius: 9999px;
+}
+
+/* ─── Corner Labels & Badges ─── */
+.corner-tag {
+  font-family: var(--font-display), "Syne", sans-serif;
+  font-size: clamp(0.7rem, 0.8vw, 0.9rem);
+  font-weight: 800;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--color-white);
+}
+
+.badge-present {
+  font-family: var(--font-retro), "Shrikhand", cursive;
+  font-size: clamp(1.1rem, 1.8vw, 2.2rem);
+  color: var(--color-white);
+  letter-spacing: 0.04em;
+  line-height: 1.1;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
+}
+
+/* ─── Retro Editorial Manifesto Box ─── */
+.retro-manifesto {
+  font-family: var(--font-display), "Syne", sans-serif;
+  font-size: clamp(0.68rem, 0.85vw, 1rem);
+  font-weight: 800;
+  line-height: 1.8;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-white);
+  border-top: 1.5px solid var(--color-rule);
+  border-bottom: 1.5px solid var(--color-rule);
+  padding: 1.25rem 0.5rem;
+  text-align: center;
+  position: relative;
+}
+
+.rule-bar {
+  display: inline-block;
+  vertical-align: middle;
+  width: 38px;
+  height: 2px;
+  background-color: var(--color-white);
+  margin: 0 8px;
+  opacity: 0.85;
+}
+
+.rule-bar-orange {
+  display: inline-block;
+  vertical-align: middle;
+  width: 32px;
+  height: 2.5px;
+  background-color: var(--color-orange);
+  margin: 0 8px;
+}
+
+/* ─── Orange Highlights & Glows ─── */
+.orange-glow {
+  box-shadow: 0 0 35px var(--color-orange-glow);
+}
+
+.orange-pill {
+  background: var(--color-orange);
+  color: var(--color-white);
+  font-family: var(--font-display), "Syne", sans-serif;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-radius: 9999px;
+  padding: 0.65rem 1.6rem;
+  transition: all 0.3s var(--ease-smooth);
+}
+
+.orange-pill:hover {
+  background: var(--color-orange-bright);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px var(--color-orange-glow);
+}
+
+/* ─── Noise Texture Overlay ─── */
+.noise-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0.035;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 128px 128px;
+}
+
+/* ─── Animations & Visible Defaults (never hide content!) ─── */
+.reveal, .reveal-scale, .reveal-left, .reveal-right {
+  opacity: 1;
+  transform: none;
+  transition: opacity 0.8s var(--ease-smooth), transform 0.8s var(--ease-smooth);
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-12px) rotate(3deg); }
+}
+
+/* ─── Section Container ─── */
+.section-container {
+  padding-left: clamp(1.5rem, 6.666vw, 7rem);
+  padding-right: clamp(1.5rem, 6.666vw, 7rem);
+}
+
+@media (max-width: 768px) {
+  .section-container {
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+  }
+}
+
+/* ─── Hide scrollbar utility for mobile category strips ─── */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* ─── Falling Food Animation for Loading Screen ─── */
+@keyframes foodFall {
+  0% {
+    transform: translateY(-80px) rotate(0deg) scale(0.85);
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.9;
+  }
+  85% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translateY(108vh) rotate(360deg) scale(1.1);
+    opacity: 0;
+  }
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    filter: drop-shadow(0 0 20px rgba(255, 107, 0, 0.35));
+  }
+  50% {
+    filter: drop-shadow(0 0 45px rgba(255, 107, 0, 0.8));
+  }
+}
