@@ -118,38 +118,39 @@ export default function Preloader({ onComplete }) {
       </div>
 
       {/* Main content */}
-      <div className="relative z-10 flex w-full max-w-3xl flex-col items-center px-5 text-center">
-        <p className="mb-5 text-[10px] font-extrabold uppercase tracking-[0.4em] text-[#ffa347] sm:text-xs">
+      <div className="relative z-10 flex w-full max-w-3xl flex-col items-center px-4 sm:px-5 text-center">
+        {/* Top Location Label */}
+        <p className="mb-4 text-[9px] font-extrabold uppercase tracking-[0.2em] text-[#ffa347] sm:mb-5 sm:text-xs sm:tracking-[0.4em]">
           Islamabad · Sector F-11
         </p>
 
-        <div className="mb-5 flex items-center gap-3 sm:gap-4">
-          <span className="h-px w-8 bg-[#ff6b00]/70 sm:w-14" />
-
-          <span className="text-xs font-bold uppercase tracking-[0.3em] text-white/60">
+        {/* Freshly Sizzling Divider */}
+        <div className="mb-4 flex w-full items-center justify-center gap-2 sm:mb-5 sm:gap-4">
+          <span className="h-px w-6 flex-shrink-0 bg-[#ff6b00]/70 sm:w-14" />
+          <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/60 sm:text-xs sm:tracking-[0.3em]">
             Freshly Sizzling
           </span>
-
-          <span className="h-px w-8 bg-[#ff6b00]/70 sm:w-14" />
+          <span className="h-px w-6 flex-shrink-0 bg-[#ff6b00]/70 sm:w-14" />
         </div>
 
-        <h1 className="font-display px-14 !text-[clamp(2.5rem,9vw,6.5rem)] !leading-[0.9] tracking-[-0.05em] text-white">
-          AK
-          <span className="ml-3 text-[#ff6b00] sm:ml-5">RESTAURANT</span>
+        {/* Main Title (Using Flex Wrap so it stacks cleanly on tiny screens) */}
+        <h1 className="font-display flex flex-wrap items-center justify-center gap-x-2 sm:gap-x-4 !text-[clamp(2.2rem,8vw,6.5rem)] font-black !leading-none tracking-[-0.05em] text-white">
+          <span>AK</span>
+          <span className="text-[#ff6b00]">RESTAURANT</span>
         </h1>
 
-        <p className="mt-6 max-w-md text-xs font-semibold uppercase tracking-[0.18em] text-[#b8aa98] sm:text-sm">
+        {/* Subtitle */}
+        <p className="mt-5 max-w-[280px] text-[10px] font-semibold uppercase leading-relaxed tracking-[0.15em] text-[#b8aa98] sm:mt-6 sm:max-w-md sm:text-sm sm:tracking-[0.18em]">
           Bold flavors. Unforgettable cravings.
         </p>
 
-        {/* Loading progress */}
-        <div className="mt-12 w-full max-w-xs sm:max-w-sm">
-          <div className="mb-3 flex items-center justify-between gap-4">
-            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/60 sm:text-xs">
+        {/* Loading Progress Bar Area */}
+        <div className="mt-10 w-full max-w-[260px] sm:mt-12 sm:max-w-sm">
+          <div className="mb-3 flex items-center justify-between gap-3">
+            <span className="text-[9px] font-bold uppercase tracking-[0.1em] text-white/60 sm:text-xs sm:tracking-[0.2em]">
               {progress < 100 ? "PREPARING YOUR EXPERIENCE" : "READY TO SERVE"}
             </span>
-
-            <span className="font-display text-sm font-extrabold tabular-nums text-[#ff6b00]">
+            <span className="font-display text-xs font-extrabold tabular-nums text-[#ff6b00] sm:text-sm">
               {progress}%
             </span>
           </div>
@@ -169,7 +170,8 @@ export default function Preloader({ onComplete }) {
           </div>
         </div>
 
-        <p className="mt-5 text-[9px] font-bold uppercase tracking-[0.35em] text-white/30">
+        {/* Bottom Tagline */}
+        <p className="mt-6 text-[9px] font-bold uppercase tracking-[0.25em] text-white/30 sm:mt-5 sm:tracking-[0.35em]">
           Good food. Good mood.
         </p>
       </div>
